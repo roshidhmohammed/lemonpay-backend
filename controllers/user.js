@@ -2,6 +2,7 @@ const User = require("../models/user");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
 const userToken = require("../utils/userJwtToken");
+const Task = require("../models/task");
 
 const userSignUp = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -87,8 +88,54 @@ const getDetails = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+const addTask = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { taskName, date, description } = req.body;
+    const user = await User.findById(req.user.toString());
+
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    const createTasks = new Task({
+      taskName: taskName,
+      description: description,
+      dueDate: date,
+      user: user?._id,
+    });
+
+    await createTasks.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Task created successfully!",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+const allTasks = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.toString());
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+    const tasks = await Task.find({ user: user._id });
+    res.status(200).json({
+      success: true,
+      message: "Tasks returned successfully!",
+      tasks,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
 module.exports = {
   userSignUp,
   userSignIn,
   getDetails,
+  addTask,
+  allTasks,
 };
