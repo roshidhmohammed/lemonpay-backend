@@ -6,7 +6,10 @@ const {
     userSignIn,
     getDetails,
     addTask,
-    allTasks
+    allTasks,
+    singleTask,
+    editTask,
+    deleteTask
   } = require("../controllers/user");
 
 
@@ -18,6 +21,10 @@ const {
   router.route("/get-details").get(isUserAuthenticated, getDetails);
   router.route("/add-task").post(isUserAuthenticated, addTask);
   router.route("/all-tasks").get(isUserAuthenticated, allTasks);
+  router.route("/single-task/:id").get(isUserAuthenticated, singleTask);
+  router.route("/edit-task/:id").put(isUserAuthenticated, editTask);
+  router.route("/delete-task/:id").delete(isUserAuthenticated, deleteTask);
+
 
   
 

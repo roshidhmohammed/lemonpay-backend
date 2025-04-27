@@ -132,10 +132,79 @@ const allTasks = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+const singleTask = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: "Task returned successfully!",
+      task,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+const editTask = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { taskName, description, dueDate } = req.body;
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return next(new ErrorHandler("Task not found", 404));
+    }
+
+    if (task.user.toString() !== req.user.toString()) {
+      return next(
+        new ErrorHandler("You are not authorized to update this task", 403)
+      );
+    }
+
+    task.taskName = taskName || task.taskName;
+    task.description = description || task.description;
+    task.dueDate = dueDate || task.dueDate;
+
+    await task.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Task updated successfully!",
+      task,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+const deleteTask = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return next(new ErrorHandler("Task not found", 404));
+    }
+
+    await task.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Task deleted successfully",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
 module.exports = {
   userSignUp,
   userSignIn,
   getDetails,
   addTask,
   allTasks,
+  singleTask,
+  editTask,
+  deleteTask,
 };
