@@ -42,12 +42,22 @@
 
  ## Troubleshooting
    
-   - If you encounter issues, here are some common fixes:
-      - CORS Issues: in the app.js file replace the existing " app.use(  cors({
+   - If you encounter issues, here are some common fixes
+      - CORS Issues: in the app.js file replace the existing line of code  
+      
+
+         app.use(  cors({
          origin:process.env.FRONTEND_URL,
          methods: ["GET", "POST", "PUT", "DELETE"],
          allowedHeaders: ['Content-Type', 'Authorization'],
          credentials: true,
-        }))" with "app.use(cors())"
+        }))
+        
+
+         with below code 
+         
+         
+          app.use(cors())
+          
      
       - Database Connection Issues: If you're using MongoDB Atlas, make sure your cluster allows connections from your IP address.
