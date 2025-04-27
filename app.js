@@ -2,10 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const ErrorHandler = require("./middlewares/error");
-const a =process.env.PORT
 
 // cors
-app.use(  cors({
+app.use(cors({
     origin:process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -30,7 +29,6 @@ app.use("/test", (req, res) => {
 
 app.use("/api/user", userRoutes);
 
-console.log(a)
 
 app.use(ErrorHandler);
 
